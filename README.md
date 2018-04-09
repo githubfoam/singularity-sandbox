@@ -7,3 +7,5 @@ Download Oracle VM Virtualbox https://www.virtualbox.org/wiki/Downloads
 
 "Ansible_Local" Provisioning https://www.vagrantup.com/docs/provisioning/ansible_local.html
 
+Same method is applicable to Docker. https://docs.docker.com/install/
+
