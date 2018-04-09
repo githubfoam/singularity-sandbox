@@ -1,0 +1,20 @@
+BootStrap: debootstrap
+OSVersion: xenial
+MirrorURL:  http://us.archive.ubuntu.com/ubuntu/
+Include: apt
+
+%help
+echo "Hello from inside the container"
+
+%runscript
+    echo "This is what happens when you run the container..."
+
+%post
+	# Runs within the container during Bootstrap
+	# Install the necessary packages (from repo)
+    echo "Install additional software here"
+	apt-get update -y
+	touch boulimia.txt
+	apt-get install python -y
+	apt-get clean	
+%test
