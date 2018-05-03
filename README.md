@@ -1,6 +1,9 @@
 # singularity1
 Cross-platform Singularity 2.4.5-dist
 
+Host:Windows 10 / OpenSUSE / Centos   
+Vagrant VM guest : Centos / Ubuntu   
+
 Download Vagrant https://www.vagrantup.com/downloads.html
 
 Download Oracle VM Virtualbox https://www.virtualbox.org/wiki/Downloads
