@@ -1,0 +1,17 @@
+BootStrap: debootstrap
+OSVersion: bionic
+MirrorURL: http://us.archive.ubuntu.com/ubuntu/
+
+
+%runscript
+    echo "This is what happens when you run the container..."
+
+
+%post
+    	echo "Hello from inside the container"
+	apt-get update
+    	# NEW UPDATES
+	sed -i 's/$/ universe/' /etc/apt/sources.list
+    	apt-get update
+    	apt-get -y install vim fortune cowsay lolcat
+	apt-get clean

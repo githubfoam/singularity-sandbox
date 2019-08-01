@@ -2,12 +2,13 @@
 - hosts: all
   become: yes # This means that all tasks will be executed with sudo
   tasks:
+   - name: "APT: Install aptitude package"
+     apt:
+        name: aptitude
+        force_apt_get: yes
    - name: Update all packages to the latest version
      apt:
       upgrade: dist
-     when:
-      - ansible_os_family == "Debian"
-      - ansible_distribution == "Ubuntu"
    - name: Run the equivalent of "apt-get update" as a separate step
      apt:
         update_cache: yes
@@ -38,14 +39,10 @@
      when:
        - ansible_distribution == "Ubuntu"
        - ansible_os_family == "Debian"
-
-   - name: Update repositories cache and install `singularity` package
-     apt: name={{item}} state=latest
-     update_cache: yes
-     with_items:
-       - singularity-container
-       - debootstrap
-       - squashfs-tools
+   - name: Update repositories cache and install singularity packages
+     apt:
+        pkg: ['singularity-container','debootstrap', 'squashfs-tools']
+        state: present
      when:
        - ansible_distribution == "Ubuntu"
        - ansible_os_family == "Debian"
@@ -53,10 +50,5 @@
    - name: Run some self tests for singularity install
      command: singularity selftest
      when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"  
-   - name: Build container from centos recipe file
-     command: singularity build --sandbox /tmp/ubuntusingular.simg /vagrant/definitions/ubuntu.def
-     when:     
        - ansible_distribution == "Ubuntu"
        - ansible_os_family == "Debian"

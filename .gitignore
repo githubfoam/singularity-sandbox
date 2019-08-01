@@ -1,0 +1,6 @@
+.vagrant
+.terraform
+*.retry
+*.tfplan
+*.tfstate
+*.tfstate.backup

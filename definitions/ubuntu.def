@@ -1,20 +1,19 @@
-BootStrap: debootstrap
-OSVersion: xenial
-MirrorURL:  http://us.archive.ubuntu.com/ubuntu/
-Include: apt
-
-%help
-echo "Hello from inside the container"
+Bootstrap: docker
+From: ubuntu:latest
 
 %runscript
-    echo "This is what happens when you run the container..."
+exec echo "The runscript is the containers default runtime command!"
+
+%files
+/home/vagrant/ubuntu.def /data/ubuntu.def
+%environment
+VARIABLE=HELLOWORLD
+Export VARIABLE
+
+%labels
+AUTHOR githubfoam
 
 %post
-	# Runs within the container during Bootstrap
-	# Install the necessary packages (from repo)
-    echo "Install additional software here"
-	apt-get update -y
-	touch boulimia.txt
-	apt-get install python -y
-	apt-get clean	
-%test
+apt-get update && apt-get -y install python3 git wget
+mkdir /data
+echo "The post section is where you can install and configure your container."

@@ -1,62 +1,43 @@
----
-- hosts: all
-  become: yes # This means that all tasks will be executed with sudo
-  tasks:
-   - name: Update all packages to the latest version
-     apt:
-      upgrade: dist
-     when:
-      - ansible_os_family == "Debian"
-      - ansible_distribution == "Ubuntu"
-   - name: Run the equivalent of "apt-get update" as a separate step
-     apt:
-        update_cache: yes
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
-   - name: Set repos http://neuro.debian.net/lists/xenial.us-ca.full
-     get_url:
-        url: http://neuro.debian.net/lists/xenial.us-ca.full
-        dest: /etc/apt/sources.list.d/neurodebian.sources.list
-        mode: 644
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
-   - name: Receive repo keys hkp://pool.sks-keyservers.net:80
-     command: apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
-   - name: Check if key exists
-     command: apt-key fingerprint 0xA5D32F012649A5A9
-     when:
-      - ansible_distribution == "Ubuntu"
-      - ansible_os_family == "Debian"
-   - name: Run the equivalent of "apt-get update" as a separate step
-     apt:
-        update_cache: yes
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
 
-   - name: Update repositories cache and install `singularity` package
-     apt: name={{item}} state=latest
-     update_cache: yes
-     with_items:
-       - singularity-container
-       - debootstrap
-       - squashfs-tools
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
+Vagrant.configure("2") do |config|
 
-   - name: Run some self tests for singularity install
-     command: singularity selftest
-     when:
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"  
-   - name: Build container from centos recipe file
-     command: singularity build --sandbox /tmp/ubuntusingular.simg /vagrant/definitions/ubuntu.def
-     when:     
-       - ansible_distribution == "Ubuntu"
-       - ansible_os_family == "Debian"
+  config.vm.define "control01" do |webtier|
+      webtier.vm.box = "bento/ubuntu-18.10"
+      webtier.vm.hostname = "control01"
+      webtier.vm.network "private_network", ip: "192.168.45.10"
+      webtier.vm.provider "virtualbox" do |vb|
+          vb.name = "control01"
+          vb.gui = false
+          vb.memory = "1024"
+          vb.cpus = 1
+      end
+      webtier.vm.provision "ansible_local" do |ansible|
+      ansible.compatibility_mode = "2.0"
+      ansible.version = "2.8.2"
+      ansible.playbook = "deploy.yml"
+      end
+
+    end
+
+    config.vm.define "control02" do |webtier|
+        webtier.vm.box = "bento/ubuntu-18.10"
+        webtier.vm.hostname = "control02"
+        webtier.vm.network "private_network", ip: "192.168.45.11"
+        webtier.vm.provider "virtualbox" do |vb|
+            vb.name = "control02"
+            vb.gui = false
+            vb.memory = "512"
+            vb.cpus = 1
+        end
+        webtier.vm.provision "ansible_local" do |ansible|
+        ansible.compatibility_mode = "2.0"
+        ansible.version = "2.8.2"
+        ansible.playbook = "deploy.yml"
+        end
+
+      end
+
+
+end
